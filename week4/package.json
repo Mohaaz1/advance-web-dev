@@ -1,0 +1,16 @@
+{
+  "name": "week4",
+  "version": "1.0.0",
+  "description": "BIT3208 Week 4 - Multi-step Authentication",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-session": "^1.19.0"
+  }
+}

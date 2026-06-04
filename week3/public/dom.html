@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 3 – DOM Manipulation | BIT3208</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        header h1 { font-size: 24px; }
+        header p  { font-size: 13px; margin-top: 6px; color: #bdc3c7; }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 12px;
+            background: #34495e;
+        }
+        .nav-links a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .nav-links a:hover    { background: #2c3e50; }
+        .nav-links a.active   { background: #3498db; }
+
+        .container {
+            max-width: 860px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-top: 4px solid #9b59b6;
+        }
+        .card.completed { border-top-color: #2ecc71; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+        .card h2 {
+            font-size: 16px;
+            color: #2c3e50;
+            border-left: 4px solid #9b59b6;
+            padding-left: 10px;
+        }
+        .card.completed h2 { border-left-color: #2ecc71; }
+
+        .check-icon { font-size: 20px; display: none; }
+        .card.completed .check-icon { display: inline; }
+
+        .card .subtitle {
+            font-size: 12px;
+            color: #999;
+            padding-left: 14px;
+            margin-bottom: 12px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #f5eef8;
+            color: #8e44ad;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 4px;
+            margin-bottom: 12px;
+        }
+
+        /* ── Task 2A: Dynamic Menu ── */
+        .dynamic-nav {
+            background: #2c3e50;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+        .dynamic-nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .dynamic-nav ul li a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 11px 18px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .dynamic-nav ul li a:hover    { background: #3498db; }
+        .dynamic-nav ul li a.active   { background: #2980b9; font-weight: bold; }
+
+        .menu-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .menu-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .menu-input-row input {
+            flex: 1;
+            padding: 9px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .menu-input-row input:focus { border-color: #9b59b6; }
+
+        .menu-status {
+            font-size: 13px;
+            color: #888;
+            min-height: 20px;
+            margin-top: 6px;
+        }
+
+        /* ── Task 2B: Interactive Buttons ── */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .interactive-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+        .interactive-btn:active { transform: scale(0.95); }
+
+        .btn-toggle   { background: #3498db; }
+        .btn-color    { background: #e67e22; }
+        .btn-size     { background: #27ae60; }
+        .btn-shake    { background: #e74c3c; }
+        .btn-counter  { background: #8e44ad; }
+        .btn-reset-all { background: #7f8c8d; }
+
+        .demo-box {
+            background: #3498db;
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            margin-bottom: 12px;
+            user-select: none;
+        }
+
+        .counter-display {
+            text-align: center;
+            font-size: 42px;
+            font-weight: bold;
+            color: #8e44ad;
+            padding: 10px;
+            transition: transform 0.1s;
+        }
+        .counter-display.bump { transform: scale(1.3); }
+
+        .counter-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20%      { transform: translateX(-8px); }
+            40%      { transform: translateX(8px); }
+            60%      { transform: translateX(-5px); }
+            80%      { transform: translateX(5px); }
+        }
+        .shaking { animation: shake 0.4s ease; }
+
+        /* ── Task 2C: Live Text Preview ── */
+        .preview-toolbar {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+        .toolbar-btn {
+            padding: 5px 12px;
+            border: 1.5px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            font-size: 13px;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.15s;
+        }
+        .toolbar-btn:hover   { background: #ecf0f1; border-color: #bdc3c7; }
+        .toolbar-btn.active  { background: #9b59b6; color: white; border-color: #9b59b6; }
+
+        .color-picker-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .color-dot {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .color-dot:hover  { transform: scale(1.2); }
+        .color-dot.picked { border-color: #2c3e50; transform: scale(1.2); }
+
+        .preview-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        textarea {
+            width: 100%;
+            height: 160px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+            font-family: Arial, sans-serif;
+        }
+        textarea:focus { border-color: #9b59b6; }
+
+        .live-output {
+            height: 160px;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 6px;
+            overflow-y: auto;
+            background: #fdfcff;
+            font-size: 14px;
+            line-height: 1.6;
+            transition: all 0.2s;
+        }
+
+        .preview-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        .preview-stats span { color: #9b59b6; font-weight: bold; }
+
+        /* ── Buttons ── */
+        button {
+            background: #9b59b6;
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:hover  { background: #8e44ad; }
+        button:active { transform: scale(0.97); }
+
+        .btn-blue   { background: #3498db; }
+        .btn-blue:hover   { background: #2980b9; }
+        .btn-red    { background: #e74c3c; }
+        .btn-red:hover    { background: #c0392b; }
+        .btn-green  { background: #27ae60; }
+        .btn-green:hover  { background: #229954; }
+        .btn-gray   { background: #7f8c8d; }
+        .btn-gray:hover   { background: #717d7e; }
+
+        @media (max-width: 600px) {
+            .preview-area { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Week 3 &ndash; Task 2: DOM Manipulation</h1>
+    <p>BIT3208 &ndash; Advanced Web Design and Development | MEVN Stack</p>
+</header>
+
+<div class="nav-links">
+    <a href="index.html">Task 1 &ndash; JS Basics</a>
+    <a href="dom.html">Task 2 &ndash; DOM Manipulation</a>
+    <a href="task3.html">Task 3 &ndash; Backend Basics</a>
+</div>
+
+<div class="container">
+
+    <!-- TASK 2A: Dynamic Menu -->
+    <div class="card" id="card-2a">
+        <div class="card-header">
+            <h2>Task 2A &ndash; Dynamic Menu</h2>
+            <span class="check-icon"></span>
+        </div>
+        <p class="subtitle">Add, remove and highlight menu items dynamically using the DOM</p>
+        <span class="tag">DOM</span>
+        <span class="tag">createElement</span>
+        <span class="tag">appendChild</span>
+
+        <!-- Live menu -->
+        <div class="dynamic-nav">
+            <ul id="menu-list">
+                <li><a href="#" onclick="setActive(this)">Home</a></li>
+                <li><a href="#" onclick="setActive(this)">About</a></li>
+                <li><a href="#" onclick="setActive(this)">Services</a></li>
+                <li><a href="#" onclick="setActive(this)">Contact</a></li>
+            </ul>
+        </div>
+
+        <!-- Add item -->
+        <div class="menu-input-row">
+            <input type="text" id="menu-input" placeholder="Enter new menu item name">
+            <button class="btn-green" onclick="addMenuItem()">Add Item</button>
+        </div>
+
+        <div class="menu-controls">
+            <button class="btn-red"  onclick="removeLastItem()">Remove Last Item</button>
+            <button class="btn-gray" onclick="resetMenu()">Reset Menu</button>
+        </div>
+
+        <div class="menu-status" id="menu-status">Click any menu item to set it as active.</div>
+    </div>
+
+
+    <!-- TASK 2B: Interactive Buttons -->
+    <div class="card" id="card-2b">
+        <div class="card-header">
+            <h2>Task 2B &ndash; Interactive Buttons</h2>
+            <span class="check-icon"></span>
+        </div>
+        <p class="subtitle">Buttons that change content, style and behaviour of elements on the page</p>
+        <span class="tag">Hide/Show</span>
+        <span class="tag">Style Changes</span>
+        <span class="tag">Events</span>
+
+        <!-- Demo box -->
+        <div class="demo-box" id="demo-box">I am the demo box. Click the buttons below!</div>
+
+        <!-- Button grid -->
+        <div class="btn-grid">
+            <button class="interactive-btn btn-toggle" onclick="toggleBox()">
+                Hide / Show Box
+            </button>
+            <button class="interactive-btn btn-color" onclick="changeColor()">
+                Change Color
+            </button>
+            <button class="interactive-btn btn-size" onclick="changeSize()">
+                Change Size
+            </button>
+            <button class="interactive-btn btn-shake" onclick="shakeBox()">
+                Shake Box
+            </button>
+            <button class="interactive-btn btn-reset-all" onclick="resetBox()">
+                Reset Box
+            </button>
+        </div>
+
+        <!-- Click counter -->
+        <div class="counter-display" id="click-count">0</div>
+        <p style="text-align:center; font-size:12px; color:#aaa; margin-bottom:10px;">
+            Total button clicks
+        </p>
+        <div class="counter-controls">
+            <button class="btn-gray" onclick="resetCounter()">Reset Counter</button>
+        </div>
+    </div>
+
+
+    <!-- TASK 2C: Live Text Preview -->
+    <div class="card" id="card-2c">
+        <div class="card-header">
+            <h2>Task 2C &ndash; Live Text Preview</h2>
+            <span class="check-icon"></span>
+        </div>
+        <p class="subtitle">Type in the editor and see a live formatted preview on the right</p>
+        <span class="tag">innerHTML</span>
+        <span class="tag">innerText</span>
+        <span class="tag">Live Events</span>
+
+        <!-- Toolbar -->
+        <div class="preview-toolbar">
+            <button class="toolbar-btn" id="btn-bold"
+                    onclick="toggleFormat('bold')"><b>B</b></button>
+            <button class="toolbar-btn" id="btn-italic"
+                    onclick="toggleFormat('italic')"><i>I</i></button>
+            <button class="toolbar-btn" id="btn-underline"
+                    onclick="toggleFormat('underline')"><u>U</u></button>
+
+            <div style="width:1px; background:#ddd; margin:0 4px;"></div>
+
+            <div class="color-picker-row">
+                <span style="font-size:12px; color:#888;">Color:</span>
+                <div class="color-dot picked" style="background:#333;"
+                     onclick="setColor('#333', this)"></div>
+                <div class="color-dot" style="background:#3498db;"
+                     onclick="setColor('#3498db', this)"></div>
+                <div class="color-dot" style="background:#e74c3c;"
+                     onclick="setColor('#e74c3c', this)"></div>
+                <div class="color-dot" style="background:#27ae60;"
+                     onclick="setColor('#27ae60', this)"></div>
+                <div class="color-dot" style="background:#8e44ad;"
+                     onclick="setColor('#8e44ad', this)"></div>
+            </div>
+
+            <div style="width:1px; background:#ddd; margin:0 4px;"></div>
+
+            <select id="font-size-select" onchange="updatePreview()"
+                    style="padding:4px 8px; border:1.5px solid #ddd;
+                           border-radius:4px; font-size:13px; outline:none;">
+                <option value="12px">12px</option>
+                <option value="14px" selected>14px</option>
+                <option value="16px">16px</option>
+                <option value="20px">20px</option>
+                <option value="24px">24px</option>
+            </select>
+
+            <button class="toolbar-btn btn-red"
+                    onclick="clearPreview()" style="margin-left:auto;">Clear</button>
+        </div>
+
+        <!-- Editor + Preview -->
+        <div class="preview-area">
+            <div>
+                <p style="font-size:12px; color:#888; margin-bottom:6px;">
+                    EDITOR &mdash; Type here
+                </p>
+                <textarea id="editor"
+                          placeholder="Start typing here and watch the live preview..."
+                          oninput="updatePreview()"></textarea>
+            </div>
+            <div>
+                <p style="font-size:12px; color:#888; margin-bottom:6px;">
+                    LIVE PREVIEW
+                </p>
+                <div class="live-output" id="live-output">
+                    Your preview will appear here...
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="preview-stats">
+            Characters: <span id="stat-chars">0</span> &nbsp;|&nbsp;
+            Words: <span id="stat-words">0</span> &nbsp;|&nbsp;
+            Lines: <span id="stat-lines">0</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    // ── TASK 2A ── Dynamic Menu ───────────────────────────────────────
+
+    var defaultMenuItems = ["Home", "About", "Services", "Contact"];
+
+    function setActive(link) {
+        var allLinks = document.querySelectorAll("#menu-list a");
+        allLinks.forEach(function(a) { a.classList.remove("active"); });
+        link.classList.add("active");
+
+        document.getElementById("menu-status").textContent =
+            "Active page set to: " + link.textContent;
+
+        checkCard2aDone();
+    }
+
+    function addMenuItem() {
+        var input    = document.getElementById("menu-input");
+        var menuList = document.getElementById("menu-list");
+        var name     = input.value.trim();
+
+        if (name === "") {
+            document.getElementById("menu-status").textContent =
+                "Please type a menu item name first.";
+            return;
+        }
+
+        // Create new li and a elements using the DOM
+        var li   = document.createElement("li");
+        var link = document.createElement("a");
+        link.href        = "#";
+        link.textContent = name;
+        link.onclick     = function() { setActive(this); };
+
+        li.appendChild(link);
+        menuList.appendChild(li);
+
+        document.getElementById("menu-status").textContent =
+            "Added: \"" + name + "\" to the menu.";
+
+        input.value = "";
+        checkCard2aDone();
+    }
+
+    function removeLastItem() {
+        var menuList = document.getElementById("menu-list");
+        if (menuList.children.length > 1) {
+            var removed = menuList.lastElementChild.textContent;
+            menuList.removeChild(menuList.lastElementChild);
+            document.getElementById("menu-status").textContent =
+                "Removed: \"" + removed.trim() + "\" from the menu.";
+        } else {
+            document.getElementById("menu-status").textContent =
+                "Cannot remove — at least one item must remain.";
+        }
+        checkCard2aDone();
+    }
+
+    function resetMenu() {
+        var menuList = document.getElementById("menu-list");
+        menuList.innerHTML = "";
+        defaultMenuItems.forEach(function(name) {
+            var li   = document.createElement("li");
+            var link = document.createElement("a");
+            link.href        = "#";
+            link.textContent = name;
+            link.onclick     = function() { setActive(this); };
+            li.appendChild(link);
+            menuList.appendChild(li);
+        });
+        document.getElementById("menu-status").textContent =
+            "Menu reset to default items.";
+    }
+
+    function checkCard2aDone() {
+        document.getElementById("card-2a").classList.add("completed");
+    }
+
+
+    // ── TASK 2B ── Interactive Buttons ───────────────────────────────
+
+    var clickCount = 0;
+    var colors     = ["#3498db","#e74c3c","#27ae60","#e67e22","#8e44ad","#2c3e50"];
+    var colorIndex = 0;
+    var isBig      = false;
+
+    function bumpCounter() {
+        clickCount++;
+        var el = document.getElementById("click-count");
+        el.textContent = clickCount;
+        el.classList.add("bump");
+        setTimeout(function() { el.classList.remove("bump"); }, 150);
+        document.getElementById("card-2b").classList.add("completed");
+    }
+
+    function toggleBox() {
+        bumpCounter();
+        var box = document.getElementById("demo-box");
+        if (box.style.display === "none") {
+            box.style.display = "flex";
+            box.textContent   = "I am visible again!";
+        } else {
+            box.style.display = "none";
+        }
+    }
+
+    function changeColor() {
+        bumpCounter();
+        colorIndex = (colorIndex + 1) % colors.length;
+        var box = document.getElementById("demo-box");
+        box.style.background = colors[colorIndex];
+        box.textContent      = "Color changed to " + colors[colorIndex];
+    }
+
+    function changeSize() {
+        bumpCounter();
+        var box = document.getElementById("demo-box");
+        isBig = !isBig;
+        if (isBig) {
+            box.style.fontSize  = "22px";
+            box.style.padding   = "35px";
+            box.textContent     = "I am now BIG!";
+        } else {
+            box.style.fontSize  = "16px";
+            box.style.padding   = "20px";
+            box.textContent     = "Back to normal size.";
+        }
+    }
+
+    function shakeBox() {
+        bumpCounter();
+        var box = document.getElementById("demo-box");
+        box.textContent = "Stop shaking me!";
+        box.classList.add("shaking");
+        setTimeout(function() { box.classList.remove("shaking"); }, 500);
+    }
+
+    function resetBox() {
+        var box = document.getElementById("demo-box");
+        box.style.display    = "flex";
+        box.style.background = "#3498db";
+        box.style.fontSize   = "16px";
+        box.style.padding    = "20px";
+        box.textContent      = "Box has been reset!";
+        colorIndex           = 0;
+        isBig                = false;
+        bumpCounter();
+    }
+
+    function resetCounter() {
+        clickCount = 0;
+        document.getElementById("click-count").textContent = "0";
+    }
+
+
+    // ── TASK 2C ── Live Text Preview ─────────────────────────────────
+
+    var formats = { bold: false, italic: false, underline: false };
+    var currentColor = "#333";
+
+    function updatePreview() {
+        var text    = document.getElementById("editor").value;
+        var output  = document.getElementById("live-output");
+        var size    = document.getElementById("font-size-select").value;
+
+        if (text.trim() === "") {
+            output.innerHTML   = "Your preview will appear here...";
+            output.style.color = "#aaa";
+        } else {
+            // Replace newlines with <br> for display
+            var html = text.replace(/\n/g, "<br>");
+
+            output.innerHTML        = html;
+            output.style.color      = currentColor;
+            output.style.fontSize   = size;
+            output.style.fontWeight    = formats.bold      ? "bold"      : "normal";
+            output.style.fontStyle     = formats.italic    ? "italic"    : "normal";
+            output.style.textDecoration = formats.underline ? "underline" : "none";
+        }
+
+        // Stats
+        var chars = text.length;
+        var words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+        var lines = text === "" ? 0 : text.split("\n").length;
+
+        document.getElementById("stat-chars").textContent = chars;
+        document.getElementById("stat-words").textContent = words;
+        document.getElementById("stat-lines").textContent = lines;
+
+        document.getElementById("card-2c").classList.add("completed");
+    }
+
+    function toggleFormat(type) {
+        formats[type] = !formats[type];
+        var btn = document.getElementById("btn-" + type);
+        if (formats[type]) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+        updatePreview();
+    }
+
+    function setColor(color, dot) {
+        currentColor = color;
+        document.querySelectorAll(".color-dot").forEach(function(d) {
+            d.classList.remove("picked");
+        });
+        dot.classList.add("picked");
+        updatePreview();
+    }
+
+    function clearPreview() {
+        document.getElementById("editor").value        = "";
+        document.getElementById("live-output").innerHTML = "Your preview will appear here...";
+        document.getElementById("live-output").style.color = "#aaa";
+        document.getElementById("stat-chars").textContent = "0";
+        document.getElementById("stat-words").textContent = "0";
+        document.getElementById("stat-lines").textContent = "0";
+
+        formats = { bold: false, italic: false, underline: false };
+        ["btn-bold","btn-italic","btn-underline"].forEach(function(id) {
+            document.getElementById(id).classList.remove("active");
+        });
+    }
+
+</script>
+</body>
+</html>

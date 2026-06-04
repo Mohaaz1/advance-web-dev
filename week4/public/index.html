@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BIT3208 - Week 4</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .progress {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .progress::before {
+      content: '';
+      position: absolute;
+      top: 15px; left: 10%;
+      width: 80%; height: 2px;
+      background: #e0e0e0;
+    }
+    .step { display: flex; flex-direction: column; align-items: center; z-index: 1; }
+    .step-circle {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #e0e0e0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 13px; color: #999;
+      transition: all 0.3s;
+    }
+    .step.active .step-circle { background: #0f3460; color: white; }
+    .step.done .step-circle { background: #2e7d32; color: white; }
+    .step-label { font-size: 11px; margin-top: 5px; color: #999; }
+    .step.active .step-label { color: #0f3460; font-weight: 600; }
+    h2 { color: #1a1a2e; margin-bottom: 18px; font-size: 20px; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 13px; color: #555; margin-bottom: 5px; font-weight: 500; }
+    input, textarea {
+      width: 100%; padding: 10px 14px;
+      border: 2px solid #e0e0e0; border-radius: 8px;
+      font-size: 14px; transition: border-color 0.2s; outline: none;
+    }
+    input:focus, textarea:focus { border-color: #0f3460; }
+    input.error, textarea.error { border-color: #c62828; }
+    input.valid, textarea.valid { border-color: #2e7d32; }
+    textarea { resize: none; height: 90px; }
+    .error-msg { color: #c62828; font-size: 12px; margin-top: 3px; display: block; }
+    .btn {
+      width: 100%; padding: 12px;
+      border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: #0f3460; color: white; }
+    .btn-success { background: #2e7d32; color: white; }
+    .alert { padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 13px; }
+    .alert.success { background: #e8f5e9; color: #2e7d32; }
+    .alert.error { background: #fce4ec; color: #c62828; }
+    .done-screen { text-align: center; padding: 10px 0; }
+    .done-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: #e8f5e9; color: #2e7d32;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: bold; margin: 0 auto 16px;
+    }
+    .done-screen h2 { color: #2e7d32; }
+    .done-screen p { color: #555; font-size: 14px; margin: 8px 0; }
+    .summary {
+      background: #f5f5f5; border-radius: 8px;
+      padding: 14px; margin: 16px 0; text-align: left;
+    }
+    .summary p { font-size: 13px; color: #555; margin-bottom: 6px; }
+    .summary p:last-child { margin-bottom: 0; }
+    .summary strong { color: #1a1a2e; }
+    .week-tag {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 20px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .fade-enter-active, .fade-leave-active { transition: all 0.3s ease; }
+    .fade-enter-from { opacity: 0; transform: translateX(20px); }
+    .fade-leave-to { opacity: 0; transform: translateX(-20px); }
+    @media (max-width: 480px) {
+      .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="card">
+    <div class="week-tag">BIT3208 - Week 4</div>
+
+    <!-- Progress Bar -->
+    <div class="progress" v-if="currentStep < 4">
+      <div class="step" :class="{ active: currentStep === 1, done: currentStep > 1 }">
+        <div class="step-circle">{{ currentStep > 1 ? 'v' : '1' }}</div>
+        <span class="step-label">Register</span>
+      </div>
+      <div class="step" :class="{ active: currentStep === 2, done: currentStep > 2 }">
+        <div class="step-circle">{{ currentStep > 2 ? 'v' : '2' }}</div>
+        <span class="step-label">Login</span>
+      </div>
+      <div class="step" :class="{ active: currentStep === 3, done: currentStep > 3 }">
+        <div class="step-circle">{{ currentStep > 3 ? 'v' : '3' }}</div>
+        <span class="step-label">Contact</span>
+      </div>
+    </div>
+
+    <transition name="fade" mode="out-in">
+
+      <!-- Step 1: Register -->
+      <div v-if="currentStep === 1" key="step1">
+        <h2>Create Account</h2>
+        <div v-if="alertMsg" :class="['alert', alertType]">{{ alertMsg }}</div>
+        <div class="form-group">
+          <label>Username</label>
+          <input v-model="form.username" type="text" placeholder="Enter username"
+            :class="fieldClass('username')" @input="validate('username')" />
+          <span class="error-msg" v-if="errors.username">{{ errors.username }}</span>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input v-model="form.email" type="email" placeholder="Enter email"
+            :class="fieldClass('email')" @input="validate('email')" />
+          <span class="error-msg" v-if="errors.email">{{ errors.email }}</span>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input v-model="form.password" type="password" placeholder="Min 6 characters"
+            :class="fieldClass('password')" @input="validate('password')" />
+          <span class="error-msg" v-if="errors.password">{{ errors.password }}</span>
+        </div>
+        <button class="btn btn-primary" @click="submitRegister" :disabled="loading">
+          {{ loading ? 'Processing...' : 'Register' }}
+        </button>
+      </div>
+
+      <!-- Step 2: Login -->
+      <div v-else-if="currentStep === 2" key="step2">
+        <h2>Login</h2>
+        <div v-if="alertMsg" :class="['alert', alertType]">{{ alertMsg }}</div>
+        <div class="form-group">
+          <label>Username</label>
+          <input v-model="loginForm.username" type="text" placeholder="Enter username"
+            :class="loginForm.username ? 'valid' : ''" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input v-model="loginForm.password" type="password" placeholder="Enter password"
+            :class="loginForm.password ? 'valid' : ''" />
+        </div>
+        <button class="btn btn-primary" @click="submitLogin" :disabled="loading">
+          {{ loading ? 'Processing...' : 'Login' }}
+        </button>
+      </div>
+
+      <!-- Step 3: Contact -->
+      <div v-else-if="currentStep === 3" key="step3">
+        <h2>Contact Us</h2>
+        <div v-if="alertMsg" :class="['alert', alertType]">{{ alertMsg }}</div>
+        <div class="form-group">
+          <label>Name</label>
+          <input v-model="contactForm.name" type="text" placeholder="Your name"
+            :class="contactForm.name ? 'valid' : ''" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input v-model="contactForm.email" type="email" placeholder="Your email"
+            :class="contactForm.email ? 'valid' : ''" />
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea v-model="contactForm.message" placeholder="Your message"
+            :class="contactForm.message ? 'valid' : ''"></textarea>
+        </div>
+        <button class="btn btn-primary" @click="submitContact" :disabled="loading">
+          {{ loading ? 'Sending...' : 'Send Message' }}
+        </button>
+      </div>
+
+      <!-- Done -->
+      <div v-else-if="currentStep === 4" key="done" class="done-screen">
+        <div class="done-icon">OK</div>
+        <h2>All Done</h2>
+        <p>You completed all 3 steps.</p>
+        <div class="summary">
+          <p>Registered as: <strong>{{ form.username }}</strong></p>
+          <p>Email: <strong>{{ form.email }}</strong></p>
+          <p>Message from: <strong>{{ contactForm.name }}</strong></p>
+        </div>
+        <button class="btn btn-success" @click="restart">Start Over</button>
+      </div>
+
+    </transition>
+  </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+createApp({
+  data() {
+    return {
+      currentStep: 1,
+      loading: false,
+      alertMsg: '',
+      alertType: '',
+      form: { username: '', email: '', password: '' },
+      errors: { username: '', email: '', password: '' },
+      loginForm: { username: '', password: '' },
+      contactForm: { name: '', email: '', message: '' },
+    };
+  },
+  methods: {
+    fieldClass(field) {
+      if (!this.form[field]) return '';
+      return this.errors[field] ? 'error' : 'valid';
+    },
+    validate(field) {
+      const val = this.form[field];
+      if (!val) { this.errors[field] = `${field} is required`; return false; }
+      if (field === 'email' && !val.includes('@')) { this.errors[field] = 'Enter a valid email'; return false; }
+      if (field === 'password' && val.length < 6) { this.errors[field] = 'Minimum 6 characters'; return false; }
+      this.errors[field] = '';
+      return true;
+    },
+    showAlert(msg, type) {
+      this.alertMsg = msg;
+      this.alertType = type;
+      setTimeout(() => this.alertMsg = '', 3000);
+    },
+    async submitRegister() {
+      const valid = ['username', 'email', 'password'].every(f => this.validate(f));
+      if (!valid) return;
+      this.loading = true;
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.form)
+      });
+      const data = await res.json();
+      this.loading = false;
+      if (data.success) { this.currentStep = 2; }
+      else { this.showAlert(data.message, 'error'); }
+    },
+    async submitLogin() {
+      if (!this.loginForm.username || !this.loginForm.password)
+        return this.showAlert('All fields are required', 'error');
+      this.loading = true;
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.loginForm)
+      });
+      const data = await res.json();
+      this.loading = false;
+      if (data.success) { this.currentStep = 3; }
+      else { this.showAlert(data.message, 'error'); }
+    },
+    async submitContact() {
+      if (!this.contactForm.name || !this.contactForm.email || !this.contactForm.message)
+        return this.showAlert('All fields are required', 'error');
+      this.loading = true;
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.contactForm)
+      });
+      const data = await res.json();
+      this.loading = false;
+      if (data.success) { this.currentStep = 4; }
+      else { this.showAlert(data.message, 'error'); }
+    },
+    restart() {
+      this.currentStep = 1;
+      this.form = { username: '', email: '', password: '' };
+      this.loginForm = { username: '', password: '' };
+      this.contactForm = { name: '', email: '', message: '' };
+      this.errors = { username: '', email: '', password: '' };
+      this.alertMsg = '';
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

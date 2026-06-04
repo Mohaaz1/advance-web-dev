@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Task 4 - Database Connection</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f0f2f5; color: #333; }
+    header { background: #2c3e50; color: white; padding: 25px; text-align: center; }
+    header h1 { font-size: 24px; }
+    header p  { font-size: 13px; margin-top: 6px; color: #bdc3c7; }
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      padding: 12px;
+      background: #34495e;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      color: #ecf0f1;
+      text-decoration: none;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .nav-links a:hover  { background: #2c3e50; }
+    .nav-links a.active { background: #27ae60; }
+    .container { max-width: 860px; margin: 30px auto; padding: 0 20px; }
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      border-top: 4px solid #27ae60;
+    }
+    .card h2 {
+      font-size: 16px;
+      color: #2c3e50;
+      border-left: 4px solid #27ae60;
+      padding-left: 10px;
+      margin-bottom: 4px;
+    }
+    .card .subtitle { font-size: 12px; color: #999; padding-left: 14px; margin-bottom: 14px; }
+    .tag {
+      display: inline-block;
+      background: #eafaf1;
+      color: #27ae60;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-right: 4px;
+      margin-bottom: 14px;
+    }
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 14px; }
+    .compare-table th { background: #2c3e50; color: white; padding: 9px 12px; text-align: left; }
+    .compare-table td { padding: 9px 12px; border-bottom: 1px solid #f0f0f0; }
+    .compare-table tr:nth-child(even) td { background: #fafafa; }
+    .compare-table code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 12px; color: #c0392b; }
+    .code-block {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 14px 16px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin-bottom: 14px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+    .code-block .kw  { color: #e74c3c; }
+    .code-block .str { color: #2ecc71; }
+    .code-block .fn  { color: #3498db; }
+    .code-block .cmt { color: #7f8c8d; }
+    .status-box {
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 16px 0;
+      display: none;
+    }
+    .status-box.success { background: #eafaf1; color: #27ae60; border: 2px solid #a9dfbf; display: block; }
+    .status-box.error   { background: #fdecea; color: #c0392b; border: 2px solid #f5b7b1; display: block; }
+    .status-box.waiting { background: #fef9e7; color: #d4ac0d; border: 2px solid #f9e79f; display: block; }
+    .db-details {
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: normal;
+      color: #555;
+    }
+    button {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #229954; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Week 3 - Task 4: Database Connection</h1>
+  <p>BIT3208 - Advanced Web Design and Development | MEVN Stack</p>
+</header>
+
+<div class="nav-links">
+  <a href="index.html">Task 1 - JS Basics</a>
+  <a href="dom.html">Task 2 - DOM Manipulation</a>
+  <a href="task3.html">Task 3 - Backend Basics</a>
+  <a href="task4.html" class="active">Task 4 - Database Connection</a>
+</div>
+
+<div class="container">
+
+  <!-- Comparison table -->
+  <div class="card">
+    <h2>PHP + MySQL vs MEVN Stack</h2>
+    <p class="subtitle">The lesson uses PHP and MySQL — our equivalent uses Node.js and MongoDB</p>
+    <span class="tag">MongoDB</span>
+    <span class="tag">Mongoose</span>
+    <span class="tag">Connection</span>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Concept</th>
+          <th>PHP + MySQL</th>
+          <th>MEVN Equivalent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Database type</td>
+          <td>Relational (MySQL)</td>
+          <td>NoSQL (MongoDB)</td>
+        </tr>
+        <tr>
+          <td>Connection method</td>
+          <td><code>mysqli_connect()</code></td>
+          <td><code>mongoose.connect()</code></td>
+        </tr>
+        <tr>
+          <td>Connection string</td>
+          <td><code>localhost, root, "", db</code></td>
+          <td><code>mongodb://127.0.0.1:27017/db</code></td>
+        </tr>
+        <tr>
+          <td>Success message</td>
+          <td><code>echo "Connected"</code></td>
+          <td><code>console.log("Connected")</code></td>
+        </tr>
+        <tr>
+          <td>Tool to manage DB</td>
+          <td>phpMyAdmin</td>
+          <td>MongoDB Compass / mongosh</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Connection code -->
+  <div class="card">
+    <h2>Database Connection Code</h2>
+    <p class="subtitle">The connection is made in index.js when the server starts</p>
+    <span class="tag">mongoose.connect</span>
+    <span class="tag">index.js</span>
+
+    <div class="code-block">
+      <span class="cmt">// index.js - equivalent of PHP mysqli_connect()</span><br>
+      <span class="kw">const</span> mongoose = <span class="fn">require</span>(<span class="str">'mongoose'</span>);<br><br>
+      mongoose.<span class="fn">connect</span>(<span class="str">'mongodb://127.0.0.1:27017/bit3208_week3'</span>)<br>
+      &nbsp;&nbsp;.<span class="fn">then</span>(() => console.<span class="fn">log</span>(<span class="str">'Connected to MongoDB'</span>))<br>
+      &nbsp;&nbsp;.<span class="fn">catch</span>(err => console.<span class="fn">log</span>(<span class="str">'Connection failed:'</span>, err));
+    </div>
+  </div>
+
+  <!-- Live connection test -->
+  <div class="card">
+    <h2>Connection Status Test</h2>
+    <p class="subtitle">Checks the live database connection status from the server</p>
+    <span class="tag">readyState</span>
+    <span class="tag">GET /db-status</span>
+
+    <button onclick="checkConnection()">Test Database Connection</button>
+
+    <div class="status-box waiting" id="status-box">
+      Click the button to test the connection...
+    </div>
+
+    <div class="db-details" id="db-details"></div>
+  </div>
+
+</div>
+
+<script>
+  function checkConnection() {
+    var box     = document.getElementById('status-box');
+    var details = document.getElementById('db-details');
+
+    box.className   = 'status-box waiting';
+    box.textContent = 'Checking connection...';
+    details.textContent = '';
+
+    fetch('/db-status')
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.success) {
+          box.className   = 'status-box success';
+          box.textContent = 'Connected Successfully';
+          details.innerHTML =
+            'Database: <strong>' + data.db + '</strong><br>' +
+            'Host: <strong>mongodb://127.0.0.1:27017</strong><br>' +
+            'Status: <strong>Active</strong>';
+        } else {
+          box.className   = 'status-box error';
+          box.textContent = 'Connection Failed';
+          details.textContent = 'State code: ' + data.state;
+        }
+      })
+      .catch(function() {
+        box.className   = 'status-box error';
+        box.textContent = 'Could not reach the server.';
+      });
+  }
+</script>
+
+</body>
+</html>

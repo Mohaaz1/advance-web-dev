@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Task 3 - Node.js Backend Basics</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body { font-family: Arial, sans-serif; background: #f0f2f5; color: #333; }
+
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+    header h1 { font-size: 24px; }
+    header p  { font-size: 13px; margin-top: 6px; color: #bdc3c7; }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      padding: 12px;
+      background: #34495e;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      color: #ecf0f1;
+      text-decoration: none;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .nav-links a:hover  { background: #2c3e50; }
+    .nav-links a.active { background: #e67e22; }
+
+    .container {
+      max-width: 860px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      border-top: 4px solid #e67e22;
+    }
+    .card h2 {
+      font-size: 16px;
+      color: #2c3e50;
+      border-left: 4px solid #e67e22;
+      padding-left: 10px;
+      margin-bottom: 4px;
+    }
+    .card .subtitle {
+      font-size: 12px;
+      color: #999;
+      padding-left: 14px;
+      margin-bottom: 14px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #fef5ec;
+      color: #e67e22;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-right: 4px;
+      margin-bottom: 14px;
+    }
+
+    /* Comparison table */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .compare-table th {
+      background: #2c3e50;
+      color: white;
+      padding: 9px 12px;
+      text-align: left;
+    }
+    .compare-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .compare-table tr:nth-child(even) td { background: #fafafa; }
+    .compare-table code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      color: #c0392b;
+    }
+
+    /* Form */
+    .form-group { margin-bottom: 14px; }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #555;
+    }
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #e67e22; }
+
+    button {
+      background: #e67e22;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #d35400; }
+
+    .btn-blue       { background: #3498db; }
+    .btn-blue:hover { background: #2980b9; }
+
+    .output {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+    }
+    .output.success { background: #eafaf1; color: #27ae60; border: 1px solid #a9dfbf; display: block; }
+    .output.error   { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; display: block; }
+
+    /* Code block */
+    .code-block {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 14px 16px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin-bottom: 14px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+    .code-block .kw  { color: #e74c3c; }
+    .code-block .str { color: #2ecc71; }
+    .code-block .fn  { color: #3498db; }
+    .code-block .cmt { color: #7f8c8d; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Week 3 - Task 3: Node.js Backend Basics</h1>
+  <p>BIT3208 - Advanced Web Design and Development | MEVN Stack equivalent of PHP</p>
+</header>
+
+<div class="nav-links">
+  <a href="index.html">Task 1 - JS Basics</a>
+  <a href="dom.html">Task 2 - DOM Manipulation</a>
+  <a href="task3.html" class="active">Task 3 - Backend Basics</a>
+    <a href="task4.html" style="color:#ecf0f1;text-decoration:none;font-size:13px;padding:6px 14px;border-radius:4px;">Task 4 - Database Connection</a>
+</div>
+
+<div class="container">
+
+  <!-- PHP vs Node.js comparison -->
+  <div class="card">
+    <h2>PHP Concepts - Node.js Equivalents</h2>
+    <p class="subtitle">Since we use the MEVN stack, Node.js + Express replaces PHP</p>
+    <span class="tag">Syntax</span>
+    <span class="tag">Variables</span>
+    <span class="tag">Output</span>
+    <span class="tag">Forms</span>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>PHP Concept</th>
+          <th>PHP Syntax</th>
+          <th>Node.js Equivalent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Output text</td>
+          <td><code>echo "Hello";</code></td>
+          <td><code>res.send("Hello")</code></td>
+        </tr>
+        <tr>
+          <td>Variable</td>
+          <td><code>$name = "Student";</code></td>
+          <td><code>const name = "Student"</code></td>
+        </tr>
+        <tr>
+          <td>GET form data</td>
+          <td><code>$_GET['name']</code></td>
+          <td><code>req.query.name</code></td>
+        </tr>
+        <tr>
+          <td>POST form data</td>
+          <td><code>$_POST['name']</code></td>
+          <td><code>req.body.name</code></td>
+        </tr>
+        <tr>
+          <td>Database connect</td>
+          <td><code>mysqli_connect()</code></td>
+          <td><code>mongoose.connect()</code></td>
+        </tr>
+        <tr>
+          <td>Server entry file</td>
+          <td><code>index.php</code></td>
+          <td><code>index.js</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Welcome message - GET route -->
+  <div class="card">
+    <h2>Welcome Message Page</h2>
+    <p class="subtitle">Calls GET /welcome on the Express server - equivalent to PHP echo</p>
+    <span class="tag">GET Route</span>
+    <span class="tag">req.query</span>
+    <span class="tag">res.json</span>
+
+    <div class="code-block">
+      <span class="cmt">// index.js - Node.js equivalent of PHP welcome page</span><br>
+      <span class="kw">app</span>.<span class="fn">get</span>(<span class="str">'/welcome'</span>, (req, res) => {<br>
+      &nbsp;&nbsp;<span class="kw">const</span> name = req.query.name || <span class="str">'Student'</span>;<br>
+      &nbsp;&nbsp;res.<span class="fn">json</span>({ message: <span class="str">'Welcome, '</span> + name });<br>
+      });
+    </div>
+
+    <div class="form-group">
+      <label for="welcome-name">Enter your name:</label>
+      <input type="text" id="welcome-name" placeholder="e.g. Mohaaz" />
+    </div>
+    <button class="btn-blue" onclick="getWelcome()">Send to Server</button>
+    <div class="output" id="welcome-output"></div>
+  </div>
+
+  <!-- Form processor - POST route -->
+  <div class="card">
+    <h2>Simple Form Processor</h2>
+    <p class="subtitle">Submits form data via POST to the Express server - equivalent to PHP $_POST</p>
+    <span class="tag">POST Route</span>
+    <span class="tag">req.body</span>
+    <span class="tag">Form Handling</span>
+
+    <div class="code-block">
+      <span class="cmt">// index.js - Node.js equivalent of PHP form processor</span><br>
+      <span class="kw">app</span>.<span class="fn">post</span>(<span class="str">'/submit'</span>, (req, res) => {<br>
+      &nbsp;&nbsp;<span class="kw">const</span> { name, email } = req.body;<br>
+      &nbsp;&nbsp;<span class="kw">if</span> (!name || !email) <span class="kw">return</span> res.<span class="fn">json</span>({ success: <span class="kw">false</span> });<br>
+      &nbsp;&nbsp;res.<span class="fn">json</span>({ success: <span class="kw">true</span>, message: <span class="str">'Hello '</span> + name });<br>
+      });
+    </div>
+
+    <div class="form-group">
+      <label for="form-name">Name:</label>
+      <input type="text" id="form-name" placeholder="Enter your name" />
+    </div>
+    <div class="form-group">
+      <label for="form-email">Email:</label>
+      <input type="email" id="form-email" placeholder="Enter your email" />
+    </div>
+    <button onclick="submitForm()">Submit Form</button>
+    <div class="output" id="form-output"></div>
+  </div>
+
+</div>
+
+<script>
+  // GET /welcome - send name as query parameter
+  function getWelcome() {
+    var name = document.getElementById('welcome-name').value.trim();
+    var output = document.getElementById('welcome-output');
+
+    if (!name) {
+      output.textContent = 'Please enter your name first.';
+      output.className   = 'output error';
+      return;
+    }
+
+    fetch('/welcome?name=' + encodeURIComponent(name))
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        output.textContent = 'Server responded: ' + data.message;
+        output.className   = 'output success';
+      })
+      .catch(function() {
+        output.textContent = 'Could not reach the server.';
+        output.className   = 'output error';
+      });
+  }
+
+  // POST /submit - send name and email as JSON body
+  function submitForm() {
+    var name   = document.getElementById('form-name').value.trim();
+    var email  = document.getElementById('form-email').value.trim();
+    var output = document.getElementById('form-output');
+
+    fetch('/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, email: email })
+    })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.success) {
+          output.textContent = 'Server responded: ' + data.message;
+          output.className   = 'output success';
+        } else {
+          output.textContent = 'Server responded: ' + data.message;
+          output.className   = 'output error';
+        }
+      })
+      .catch(function() {
+        output.textContent = 'Could not reach the server.';
+        output.className   = 'output error';
+      });
+  }
+</script>
+
+</body>
+</html>

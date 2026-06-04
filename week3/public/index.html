@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 3 – JavaScript Basics | BIT3208</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        header h1 { font-size: 24px; }
+        header p  { font-size: 13px; margin-top: 6px; color: #bdc3c7; }
+
+        .progress-bar-wrap {
+            background: #34495e;
+            padding: 12px 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .progress-bar-track {
+            flex: 1;
+            height: 8px;
+            background: #4a6278;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        .progress-text {
+            color: #ecf0f1;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .task-badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 14px 20px;
+            background: #ecf0f1;
+            border-bottom: 1px solid #ddd;
+        }
+        .badge {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid #bdc3c7;
+            color: #999;
+            transition: all 0.3s;
+        }
+        .badge.done {
+            background: #2ecc71;
+            border-color: #27ae60;
+            color: white;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-top: 4px solid #3498db;
+            transition: box-shadow 0.3s;
+        }
+        .card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.13); }
+        .card.completed { border-top-color: #2ecc71; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+        .card h2 {
+            font-size: 16px;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        .card.completed h2 { border-left-color: #2ecc71; }
+
+        .check-icon {
+            font-size: 20px;
+            display: none;
+        }
+        .card.completed .check-icon { display: inline; }
+
+        .card .subtitle {
+            font-size: 12px;
+            color: #999;
+            padding-left: 14px;
+            margin-bottom: 12px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #eaf4fb;
+            color: #2980b9;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 4px;
+            margin-bottom: 12px;
+        }
+
+        .form-group { margin-bottom: 14px; position: relative; }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        label .char-count {
+            font-weight: normal;
+            font-size: 11px;
+            color: #aaa;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        input:focus         { border-color: #3498db; box-shadow: 0 0 0 3px rgba(52,152,219,0.15); }
+        input.valid         { border-color: #2ecc71; }
+        input.invalid       { border-color: #e74c3c; }
+        input.valid:focus   { box-shadow: 0 0 0 3px rgba(46,204,113,0.15); }
+        input.invalid:focus { box-shadow: 0 0 0 3px rgba(231,76,60,0.15); }
+
+        .input-wrapper { position: relative; }
+        .input-status {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            display: none;
+        }
+
+        .show-pass-btn {
+            position: absolute;
+            right: 36px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #aaa;
+            padding: 0;
+            margin: 0;
+        }
+        .show-pass-btn:hover { color: #555; background: none; }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:hover  { background: #2980b9; }
+        button:active { transform: scale(0.97); }
+
+        .btn-purple       { background: #8e44ad; }
+        .btn-purple:hover { background: #7d3c98; }
+        .btn-green        { background: #27ae60; }
+        .btn-green:hover  { background: #229954; }
+        .btn-red          { background: #e74c3c; }
+        .btn-red:hover    { background: #c0392b; }
+
+        .msg {
+            font-size: 13px;
+            margin-top: 10px;
+            padding: 9px 12px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.2s ease;
+        }
+        .msg.error   { background: #fdecea; color: #c0392b; display: block; }
+        .msg.success { background: #eafaf1; color: #27ae60; display: block; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .demo-output {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 14px;
+            margin-top: 12px;
+            min-height: 44px;
+            border: 1px solid #eee;
+            color: #555;
+            transition: background 0.3s;
+        }
+        .demo-output.active {
+            background: #eaf9f0;
+            border-color: #a9dfbf;
+            color: #1e8449;
+            font-weight: bold;
+        }
+
+        .live-preview {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 6px;
+            min-height: 20px;
+            transition: color 0.2s;
+        }
+        .live-preview.typing { color: #3498db; }
+
+        .alert-log {
+            margin-top: 12px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .alert-log-title {
+            background: #f8f9fa;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #888;
+            border-bottom: 1px solid #eee;
+        }
+        .alert-log-body {
+            padding: 8px 12px;
+            min-height: 38px;
+            font-size: 13px;
+            color: #555;
+        }
+        .log-entry {
+            padding: 3px 0;
+            border-bottom: 1px dashed #f0f0f0;
+            animation: slideIn 0.2s ease;
+        }
+        .log-entry:last-child { border-bottom: none; }
+
+        .event-counter {
+            display: inline-block;
+            background: #8e44ad;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+            transition: transform 0.1s;
+        }
+        .event-counter.bump { transform: scale(1.3); }
+
+        .strength-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #eee;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+        .strength-fill {
+            height: 100%;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.35s, background 0.35s;
+        }
+        .strength-label {
+            font-size: 13px;
+            margin-top: 7px;
+            font-weight: bold;
+            color: #aaa;
+        }
+        .strength-rules {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+        .rule {
+            font-size: 12px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.25s;
+        }
+        .rule.passed { color: #27ae60; }
+        .rule .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: background 0.25s;
+            flex-shrink: 0;
+        }
+        .rule.passed .dot { background: #27ae60; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Week 3 &ndash; JavaScript Basics</h1>
+    <p>BIT3208 &ndash; Advanced Web Design and Development | MEVN Stack</p>
+</header>
+
+<div class="progress-bar-wrap">
+    <span class="progress-text">Tasks Completed:</span>
+    <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+    <span class="progress-text" id="progress-label">0 / 4</span>
+</div>
+
+<div class="nav-links" style="display:flex;justify-content:center;gap:15px;padding:12px;background:#34495e;flex-wrap:wrap;">
+    <a href="index.html" style="color:#ecf0f1;text-decoration:none;font-size:13px;padding:6px 14px;border-radius:4px;background:#3498db;">Task 1 - JS Basics</a>
+    <a href="dom.html" style="color:#ecf0f1;text-decoration:none;font-size:13px;padding:6px 14px;border-radius:4px;">Task 2 - DOM Manipulation</a>
+    <a href="task3.html" style="color:#ecf0f1;text-decoration:none;font-size:13px;padding:6px 14px;border-radius:4px;">Task 3 - Backend Basics</a>
+</div>
+<div class="task-badges">
+    <div class="badge" id="badge-1a">1A &ndash; Variables &amp; Alerts</div>
+    <div class="badge" id="badge-1b">1B &ndash; Login Validation</div>
+    <div class="badge" id="badge-1c">1C &ndash; Email Validation</div>
+    <div class="badge" id="badge-1d">1D &ndash; Password Strength</div>
+</div>
+
+<div class="container">
+
+    <!-- TASK 1A -->
+    <div class="card" id="card-1a">
+        <div class="card-header">
+            <h2>Task 1A &ndash; Variables, Functions, Events &amp; Alerts</h2>
+            <span class="check-icon"></span>
+        </div>
+        <p class="subtitle">Live preview as you type &mdash; variables update in real time</p>
+        <span class="tag">Variables</span>
+        <span class="tag">Functions</span>
+        <span class="tag">Events</span>
+        <span class="tag">Alerts</span>
+
+        <div class="form-group">
+            <label for="demo-name">
+                Enter your name:
+                <span class="char-count" id="name-count">0 characters</span>
+            </label>
+            <input type="text" id="demo-name"
+                   placeholder="Type your name here"
+                   oninput="onNameType()">
+        </div>
+
+        <div class="live-preview" id="live-preview">Start typing to see live output...</div>
+
+        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button onclick="showGreeting()">Show Greeting</button>
+            <button class="btn-purple" onclick="showAlert()">
+                Show Alert
+                <span class="event-counter" id="alert-counter">0</span>
+            </button>
+            <button class="btn-red" onclick="clearTask1a()">Clear</button>
+        </div>
+
+        <div class="demo-output" id="greeting-output">Output will appear here...</div>
+
+        <div class="alert-log">
+            <div class="alert-log-title">EVENT LOG &mdash; Button Clicks Recorded</div>
+            <div class="alert-log-body" id="alert-log-body">No events yet...</div>
+        </div>
+    </div>
+
+    <!-- TASK 1B -->
+    <div class="card" id="card-1b">
+        <div class="card-header">
+            <h2>Task 1B &ndash; Login Form Validation</h2>
+            <span class="check-icon"></span>
+        </div>
+        <p class="subtitle">Real-time validation &mdash; fields update as you type</p>
+        <span class="tag">Input Handling</span>
+        <span class="tag">Form Validation</span>
+
+        <div class="form-group">
+            <label for="login-user">
+                Username
+                <span class="char-count" id="user-count">0 / min 4</span>
+            </label>
+            <div class="input-wrapper">
+                <input type="text" id="login-user"
+                       placeholder="Minimum 4 characters"
+                       oninput="liveLoginCheck()">
+                <span class="input-status" id="user-status"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="login-pass">
+                Password
+                <span class="char-count" id="pass-count">0 / min 6</span>
+            </label>
+            <div class="input-wrapper">
+                <input type="password" id="login-pass"
+                       placeholder="Minimum 6 characters"
+                       oninput="liveLoginCheck()">
+                <button class="show-pass-btn"
+                        onclick="togglePass('login-pass', this)"
+                        type="button">&#128065;</button>
+                <span class="input-status" id="pass-status"></span>
+            </div>
+        </div>
+
+        <button onclick="validateLogin()">Validate Login</button>
+        <div class="msg" id="login-msg"></div>
+    </div>
+
+    <!-- TASK 1C -->
+    <div class="card" id="card-1c">
+        <div class="card-header">
+            <h2>Task 1C &ndash; Email Validation</h2>
+            <span class="check-icon"></span>
+        </div>
+        <p class="subtitle">Live format check as you type &mdash; regex pattern matching</p>
+        <span class="tag">Regex</span>
+        <span class="tag">Input Handling</span>
+
+        <div class="form-group">
+            <label for="email-input">Email Address</label>
+            <div class="input-wrapper">
+                <input type="email" id="email-input"
+                       placeholder="e.g. student@example.com"
+                       oninput="liveEmailCheck()">
+                <span class="input-status" id="email-status"></span>
+            </div>
+        </div>
+
+        <button onclick="validateEmail()">Check Email</button>
+        <button class="btn-red" onclick="clearEmail()" style="margin-left:8px;">Clear</button>
+        <div class="msg" id="email-msg"></div>
+    </div>
+
+    <!-- TASK 1D -->
+    <div class="card" id="card-1d">
+        <div class="card-header">
+            <h2>Task 1D &ndash; Password Strength Checker</h2>
+            <span class="check-icon"></span>
+        </div>
+        <p class="subtitle">Live strength rating &mdash; checks 4 security rules as you type</p>
+        <span class="tag">Events</span>
+        <span class="tag">Functions</span>
+
+        <div class="form-group">
+            <label for="strength-pass">
+                Enter a Password
+                <span class="char-count" id="spass-count">0 characters</span>
+            </label>
+            <div class="input-wrapper">
+                <input type="password" id="strength-pass"
+                       placeholder="Type a password to test"
+                       oninput="checkStrength()">
+                <button class="show-pass-btn"
+                        onclick="togglePass('strength-pass', this)"
+                        type="button">&#128065;</button>
+            </div>
+        </div>
+
+        <div class="strength-bar">
+            <div class="strength-fill" id="strength-fill"></div>
+        </div>
+        <div class="strength-label" id="strength-label">Waiting for input...</div>
+
+        <div class="strength-rules">
+            <div class="rule" id="rule-len">
+                <span class="dot"></span> At least 6 characters
+            </div>
+            <div class="rule" id="rule-upper">
+                <span class="dot"></span> Contains uppercase letter
+            </div>
+            <div class="rule" id="rule-num">
+                <span class="dot"></span> Contains a number
+            </div>
+            <div class="rule" id="rule-special">
+                <span class="dot"></span> Contains special character
+            </div>
+        </div>
+
+        <button class="btn-green" onclick="clearStrength()" style="margin-top:14px;">
+            Reset
+        </button>
+    </div>
+
+</div>
+
+<script>
+
+    // ── Progress tracking ─────────────────────────────────────────────
+    var completed  = { a: false, b: false, c: false, d: false };
+    var alertCount = 0;
+
+    function updateProgress() {
+        var done  = Object.values(completed).filter(Boolean).length;
+        document.getElementById("progress-fill").style.width  = (done / 4 * 100) + "%";
+        document.getElementById("progress-label").textContent = done + " / 4";
+    }
+
+    function markDone(task) {
+        if (completed[task]) return;
+        completed[task] = true;
+        document.getElementById("card-1"  + task).classList.add("completed");
+        document.getElementById("badge-1" + task).classList.add("done");
+        updateProgress();
+    }
+
+
+    // ── TASK 1A ── Variables, Functions, Events, Alerts ──────────────
+    var studentName = "";
+
+    function onNameType() {
+        studentName = document.getElementById("demo-name").value;
+
+        document.getElementById("name-count").textContent =
+            studentName.length + " character" + (studentName.length !== 1 ? "s" : "");
+
+        var preview = document.getElementById("live-preview");
+        if (studentName === "") {
+            preview.textContent = "Start typing to see live output...";
+            preview.className   = "live-preview";
+        } else {
+            preview.textContent = 'Hello, "' + studentName + '" — greeting ready!';
+            preview.className   = "live-preview typing";
+        }
+    }
+
+    function showGreeting() {
+        var output = document.getElementById("greeting-output");
+        if (studentName === "") {
+            output.textContent = "Please enter your name first.";
+            output.className   = "demo-output";
+        } else {
+            output.textContent =
+                "Hello, " + studentName + "! Welcome to BIT3208 JavaScript Basics.";
+            output.className = "demo-output active";
+            logEvent("Greeting button clicked — name: \"" + studentName + "\"");
+            markDone("a");
+        }
+    }
+
+    function showAlert() {
+        alertCount++;
+        var counter = document.getElementById("alert-counter");
+        counter.textContent = alertCount;
+        counter.classList.add("bump");
+        setTimeout(function() { counter.classList.remove("bump"); }, 200);
+
+        if (studentName === "") {
+            alert("No name entered! Please type your name first.");
+            logEvent("Alert triggered — no name entered");
+        } else {
+            alert("Hello, " + studentName + "! This is a JavaScript Alert.");
+            logEvent("Alert triggered — name: \"" + studentName + "\"");
+            markDone("a");
+        }
+    }
+
+    function logEvent(msg) {
+        var body = document.getElementById("alert-log-body");
+        if (body.textContent === "No events yet...") body.innerHTML = "";
+        var now   = new Date();
+        var time  = now.getHours() + ":" +
+                    String(now.getMinutes()).padStart(2, "0") + ":" +
+                    String(now.getSeconds()).padStart(2, "0");
+        var entry = document.createElement("div");
+        entry.className   = "log-entry";
+        entry.textContent = "[" + time + "] " + msg;
+        body.appendChild(entry);
+    }
+
+    function clearTask1a() {
+        document.getElementById("demo-name").value          = "";
+        document.getElementById("live-preview").textContent = "Start typing to see live output...";
+        document.getElementById("live-preview").className   = "live-preview";
+        document.getElementById("greeting-output").textContent = "Output will appear here...";
+        document.getElementById("greeting-output").className   = "demo-output";
+        document.getElementById("name-count").textContent   = "0 characters";
+        document.getElementById("alert-log-body").textContent = "No events yet...";
+        document.getElementById("alert-counter").textContent  = "0";
+        alertCount  = 0;
+        studentName = "";
+    }
+
+
+    // ── TASK 1B ── Login Form Validation ─────────────────────────────
+    function liveLoginCheck() {
+        var username   = document.getElementById("login-user").value;
+        var password   = document.getElementById("login-pass").value;
+        var userInput  = document.getElementById("login-user");
+        var passInput  = document.getElementById("login-pass");
+        var userStatus = document.getElementById("user-status");
+        var passStatus = document.getElementById("pass-status");
+
+        document.getElementById("user-count").textContent = username.length + " / min 4";
+        document.getElementById("pass-count").textContent = password.length + " / min 6";
+
+        if (username.length === 0) {
+            userInput.className      = "";
+            userStatus.style.display = "none";
+        } else if (username.length < 4) {
+            userInput.className      = "invalid";
+            userStatus.textContent   = "✗";
+            userStatus.style.color   = "#e74c3c";
+            userStatus.style.display = "block";
+        } else {
+            userInput.className      = "valid";
+            userStatus.textContent   = "✓";
+            userStatus.style.color   = "#27ae60";
+            userStatus.style.display = "block";
+        }
+
+        if (password.length === 0) {
+            passInput.className      = "";
+            passStatus.style.display = "none";
+        } else if (password.length < 6) {
+            passInput.className      = "invalid";
+            passStatus.style.right   = "36px";
+            passStatus.textContent   = "✗";
+            passStatus.style.color   = "#e74c3c";
+            passStatus.style.display = "block";
+        } else {
+            passInput.className      = "valid";
+            passStatus.style.right   = "36px";
+            passStatus.textContent   = "✓";
+            passStatus.style.color   = "#27ae60";
+            passStatus.style.display = "block";
+        }
+    }
+
+    function validateLogin() {
+        var username = document.getElementById("login-user").value;
+        var password = document.getElementById("login-pass").value;
+        var msg      = document.getElementById("login-msg");
+
+        msg.className = "msg";
+
+        if (username === "" || password === "") {
+            msg.textContent = "Both fields are required.";
+            msg.classList.add("error");
+        } else if (username.length < 4) {
+            msg.textContent = "Username must be at least 4 characters.";
+            msg.classList.add("error");
+        } else if (password.length < 6) {
+            msg.textContent = "Password must be at least 6 characters.";
+            msg.classList.add("error");
+        } else {
+            msg.textContent = "Validation passed! Login details are acceptable.";
+            msg.classList.add("success");
+            markDone("b");
+        }
+    }
+
+    function togglePass(inputId, btn) {
+        var input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type      = "text";
+            btn.textContent = "🙈";
+        } else {
+            input.type      = "password";
+            btn.textContent = "👁";
+        }
+    }
+
+
+    // ── TASK 1C ── Email Validation ───────────────────────────────────
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function liveEmailCheck() {
+        var email      = document.getElementById("email-input").value;
+        var input      = document.getElementById("email-input");
+        var statusIcon = document.getElementById("email-status");
+
+        document.getElementById("email-msg").className = "msg";
+
+        if (email === "") {
+            input.className          = "";
+            statusIcon.style.display = "none";
+            return;
+        }
+        if (emailPattern.test(email)) {
+            input.className          = "valid";
+            statusIcon.textContent   = "✓";
+            statusIcon.style.color   = "#27ae60";
+            statusIcon.style.display = "block";
+        } else {
+            input.className          = "invalid";
+            statusIcon.textContent   = "✗";
+            statusIcon.style.color   = "#e74c3c";
+            statusIcon.style.display = "block";
+        }
+    }
+
+    function validateEmail() {
+        var email = document.getElementById("email-input").value;
+        var msg   = document.getElementById("email-msg");
+
+        msg.className = "msg";
+
+        if (email === "") {
+            msg.textContent = "Please enter an email address.";
+            msg.classList.add("error");
+        } else if (!emailPattern.test(email)) {
+            msg.textContent = "Invalid format. Example: student@university.ac.ke";
+            msg.classList.add("error");
+        } else {
+            msg.textContent = "Valid email address!";
+            msg.classList.add("success");
+            markDone("c");
+        }
+    }
+
+    function clearEmail() {
+        document.getElementById("email-input").value    = "";
+        document.getElementById("email-input").className = "";
+        document.getElementById("email-status").style.display = "none";
+        document.getElementById("email-msg").className  = "msg";
+    }
+
+
+    // ── TASK 1D ── Password Strength Checker ──────────────────────────
+    function checkStrength() {
+        var password = document.getElementById("strength-pass").value;
+        var fill     = document.getElementById("strength-fill");
+        var label    = document.getElementById("strength-label");
+
+        document.getElementById("spass-count").textContent =
+            password.length + " character" + (password.length !== 1 ? "s" : "");
+
+        var ruleLen     = password.length >= 6;
+        var ruleUpper   = /[A-Z]/.test(password);
+        var ruleNum     = /[0-9]/.test(password);
+        var ruleSpecial = /[^a-zA-Z0-9]/.test(password);
+
+        toggleRule("rule-len",     ruleLen);
+        toggleRule("rule-upper",   ruleUpper);
+        toggleRule("rule-num",     ruleNum);
+        toggleRule("rule-special", ruleSpecial);
+
+        var score = [ruleLen, ruleUpper, ruleNum, ruleSpecial].filter(Boolean).length;
+
+        if (password.length === 0) {
+            fill.style.width      = "0%";
+            fill.style.background = "#eee";
+            label.textContent     = "Waiting for input...";
+            label.style.color     = "#aaa";
+        } else if (score <= 1) {
+            fill.style.width      = "25%";
+            fill.style.background = "#e74c3c";
+            label.textContent     = "Weak Password";
+            label.style.color     = "#e74c3c";
+        } else if (score === 2) {
+            fill.style.width      = "50%";
+            fill.style.background = "#e67e22";
+            label.textContent     = "Fair Password";
+            label.style.color     = "#e67e22";
+        } else if (score === 3) {
+            fill.style.width      = "75%";
+            fill.style.background = "#f1c40f";
+            label.textContent     = "Medium Password";
+            label.style.color     = "#d4ac0d";
+        } else {
+            fill.style.width      = "100%";
+            fill.style.background = "#27ae60";
+            label.textContent     = "Strong Password";
+            label.style.color     = "#27ae60";
+            markDone("d");
+        }
+    }
+
+    function toggleRule(id, passed) {
+        var el = document.getElementById(id);
+        if (passed) { el.classList.add("passed"); }
+        else        { el.classList.remove("passed"); }
+    }
+
+    function clearStrength() {
+        document.getElementById("strength-pass").value    = "";
+        document.getElementById("strength-fill").style.width = "0%";
+        document.getElementById("strength-label").textContent = "Waiting for input...";
+        document.getElementById("strength-label").style.color = "#aaa";
+        document.getElementById("spass-count").textContent    = "0 characters";
+        ["rule-len","rule-upper","rule-num","rule-special"].forEach(function(id) {
+            document.getElementById(id).classList.remove("passed");
+        });
+    }
+
+</script>
+</body>
+</html>

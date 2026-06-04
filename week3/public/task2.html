@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Task 2 - DOM Manipulation</title>
+  <style>
+    body { max-width: 600px; margin: 0 auto; padding: 24px; font-family: Arial, sans-serif; }
+    h1 { margin-bottom: 24px; }
+    h2 { margin-top: 32px; border-bottom: 2px solid #eee; padding-bottom: 6px; }
+    button { padding: 8px 16px; margin: 4px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a2e; color: white; font-size: 0.9rem; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-green { background: #2ecc71; }
+    .btn-red   { background: #e74c3c; }
+    .menu { list-style: none; padding: 0; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; width: 200px; display: none; }
+    .menu li { padding: 10px 16px; cursor: pointer; border-bottom: 1px solid #eee; }
+    .menu li:hover  { background: #f5f5f5; }
+    .menu li.active { background: #1a1a2e; color: white; }
+    .row { display: flex; align-items: center; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+    .count-display { font-size: 1.4rem; font-weight: bold; min-width: 40px; text-align: center; }
+    .colour-box { width: 200px; height: 60px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin: 10px 0; background: #3498db; transition: background 0.3s; }
+    .text-input { width: 100%; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; margin-bottom: 10px; }
+    .preview-box { min-height: 50px; padding: 12px; border: 1px dashed #ccc; border-radius: 6px; background: #f9f9f9; font-size: 1.1rem; margin-bottom: 8px; color: #aaa; font-style: italic; }
+  </style>
+</head>
+<body>
+
+  <h1>Task 2 - DOM Manipulation</h1>
+
+  <!-- 1. Dynamic Menu -->
+  <section>
+    <h2>1. Dynamic Menu</h2>
+    <button onclick="toggleMenu()">Show Menu</button>
+    <ul class="menu" id="menu">
+      <li onclick="selectPage(this)">Home</li>
+      <li onclick="selectPage(this)">About</li>
+      <li onclick="selectPage(this)">Shop</li>
+      <li onclick="selectPage(this)">Contact</li>
+    </ul>
+    <p id="selected-page"></p>
+  </section>
+
+  <!-- 2. Interactive Buttons -->
+  <section>
+    <h2>2. Interactive Buttons</h2>
+
+    <div class="row">
+      <button id="decrement-btn" onclick="changeCount(-1)" disabled>-</button>
+      <span class="count-display" id="count">0</span>
+      <button onclick="changeCount(1)">+</button>
+    </div>
+
+    <button id="login-btn" class="btn-green" onclick="toggleLogin()">Log In</button>
+    <p>Status: <strong id="login-status">Logged Out</strong></p>
+
+    <div class="colour-box" id="colour-box">Colour Box</div>
+    <div class="row">
+      <button onclick="changeColour('#3498db')">Blue</button>
+      <button onclick="changeColour('#2ecc71')">Green</button>
+      <button onclick="changeColour('#e74c3c')">Red</button>
+      <button onclick="changeColour('#f39c12')">Orange</button>
+    </div>
+  </section>
+
+  <!-- 3. Live Text Preview -->
+  <section>
+    <h2>3. Live Text Preview</h2>
+    <input type="text" class="text-input" id="text-input" placeholder="Type something here..." oninput="updatePreview()" />
+    <div class="preview-box" id="preview">Preview will appear here...</div>
+    <p>Character count: <strong id="char-count">0</strong></p>
+    <button id="clear-btn" onclick="clearText()" disabled>Clear</button>
+  </section>
+
+  <script>
+    // --- 1. Dynamic Menu ---
+    let menuOpen = false;
+
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      const btn  = menu.previousElementSibling;
+      menuOpen = !menuOpen;
+      menu.style.display = menuOpen ? 'block' : 'none';
+      btn.textContent = menuOpen ? 'Hide Menu' : 'Show Menu';
+    }
+
+    function selectPage(item) {
+      document.querySelectorAll('.menu li').forEach(li => li.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById('selected-page').innerHTML = 'You selected: <strong>' + item.textContent + '</strong>';
+    }
+
+    // --- 2. Interactive Buttons ---
+    let count     = 0;
+    let loggedIn  = false;
+
+    function changeCount(amount) {
+      count += amount;
+      document.getElementById('count').textContent = count;
+      document.getElementById('decrement-btn').disabled = count === 0;
+    }
+
+    function toggleLogin() {
+      loggedIn = !loggedIn;
+      const btn    = document.getElementById('login-btn');
+      const status = document.getElementById('login-status');
+      btn.textContent = loggedIn ? 'Log Out' : 'Log In';
+      btn.className   = loggedIn ? 'btn-red' : 'btn-green';
+      status.textContent = loggedIn ? 'Logged In' : 'Logged Out';
+    }
+
+    function changeColour(colour) {
+      document.getElementById('colour-box').style.background = colour;
+    }
+
+    // --- 3. Live Text Preview ---
+    function updatePreview() {
+      const text      = document.getElementById('text-input').value;
+      const preview   = document.getElementById('preview');
+      const charCount = document.getElementById('char-count');
+      const clearBtn  = document.getElementById('clear-btn');
+
+      if (text) {
+        preview.textContent   = text;
+        preview.style.color   = '#333';
+        preview.style.fontStyle = 'normal';
+      } else {
+        preview.textContent   = 'Preview will appear here...';
+        preview.style.color   = '#aaa';
+        preview.style.fontStyle = 'italic';
+      }
+
+      charCount.textContent  = text.length;
+      clearBtn.disabled      = text.length === 0;
+    }
+
+    function clearText() {
+      document.getElementById('text-input').value = '';
+      updatePreview();
+    }
+  </script>
+
+</body>
+</html>
