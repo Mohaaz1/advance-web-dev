@@ -1,0 +1,141 @@
+/* RESET */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/* COLOR VARIABLES */
+
+:root{
+    --dark:#0f172a;
+    --card:#1e293b;
+    --gold:#D4AF37;
+    --green:#29AB87;
+    --white:#f8fafc;
+}
+
+/* BODY */
+
+body{
+    background:var(--dark);
+    color:var(--white);
+    font-family:Arial, Helvetica, sans-serif;
+
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+}
+
+/* MAIN CONTAINER */
+
+.container{
+    background:var(--card);
+
+    width:100%;
+    max-width:1100px;
+
+    display:flex;
+    align-items:center;
+    gap:50px;
+
+    padding:40px;
+
+    border-radius:20px;
+
+    box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+/* IMAGE SECTION */
+
+.profile-image{
+    flex:1;
+    text-align:center;
+}
+
+.profile-image img{
+    width:100%;
+    max-width:320px;
+    height:320px;
+
+    object-fit:cover;
+
+    border-radius:50%;
+
+    border:5px solid var(--gold);
+
+    transition:0.3s;
+}
+
+.profile-image img:hover{
+    transform:scale(1.05);
+}
+
+/* CONTENT */
+
+.profile-content{
+    flex:2;
+}
+
+.profile-content h1{
+    color:var(--gold);
+    font-size:3rem;
+    margin-bottom:20px;
+}
+
+.profile-content h2{
+    color:var(--green);
+    margin-top:20px;
+    margin-bottom:10px;
+}
+
+.profile-content p{
+    font-size:1.1rem;
+    line-height:1.8;
+}
+
+/* TABLET */
+
+@media (max-width:768px){
+
+    .container{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .profile-content h1{
+        font-size:2.3rem;
+    }
+
+    .profile-image img{
+        width:260px;
+        height:260px;
+    }
+}
+
+/* MOBILE */
+
+@media (max-width:480px){
+
+    .container{
+        padding:20px;
+    }
+
+    .profile-image img{
+        width:200px;
+        height:200px;
+    }
+
+    .profile-content h1{
+        font-size:1.8rem;
+    }
+
+    .profile-content p{
+        font-size:1rem;
+    }
+}
